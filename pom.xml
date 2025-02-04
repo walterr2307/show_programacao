@@ -55,6 +55,11 @@
             <artifactId>gson</artifactId>
             <version>2.8.9</version>
         </dependency>
+        <dependency>
+            <groupId>javazoom</groupId>
+            <artifactId>jlayer</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,9 +77,17 @@
                 </executions>
                 <configuration>
                     <mainClass>com.show_programacao.Main</mainClass>
+                    <!-- Se estiver usando módulos, adicione a linha abaixo -->
+                    <options>
+                        <option>--module-path</option>
+                        <option>${java.home}/lib</option> <!-- Caminho do módulo do JDK -->
+                        <option>--add-modules</option>
+                        <option>javafx.controls,javafx.fxml,javafx.base,javafx.media</option>
+                    </options>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 
 </project>

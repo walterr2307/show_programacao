@@ -82,6 +82,7 @@ public class TelaInicial extends Application {
                 for (int i = 0; i < temasArray.length; i++)
                     temasArray[i] = temasArray[i].trim();
 
+                temas = temasArray;
                 temaStage.close(); // Fecha a janela
                 gerarTelaStart();
             }
@@ -99,6 +100,9 @@ public class TelaInicial extends Application {
     }
 
     private void gerarTelaStart() {
+        ajustarStrings();
+        OrganizadorAudios org = OrganizadorAudios.instanciar(voz);
+        String audio = org.getAudio("_intro");
         Pane root = new Pane();
         Scene scene = new Scene(root, largura, altura);
         Stage stage = new Stage();
@@ -121,8 +125,7 @@ public class TelaInicial extends Application {
 
         comecarJogo.setOnAction(event -> {
             stage.close();
-            ajustarStrings();
-            Main.ComecarJogo(voz, temas);
+            Main.ComecarJogo(temas);
         });
 
         // Adicionando os botões à tela
@@ -131,6 +134,7 @@ public class TelaInicial extends Application {
         stage.setTitle(" ");
         stage.setScene(scene);
         stage.show();
+        org.reproduzirAudio(audio);
     }
 
     private void ajustarStrings() {
