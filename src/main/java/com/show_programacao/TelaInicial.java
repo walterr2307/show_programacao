@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
@@ -12,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.VBox;
 import javafx.scene.control.CheckBox;
 
 public class TelaInicial extends Application {
@@ -101,11 +101,20 @@ public class TelaInicial extends Application {
 
     private void gerarTelaStart() {
         ajustarStrings();
+
         OrganizadorAudios org = OrganizadorAudios.instanciar(voz);
         String audio = org.getAudio("_intro");
         Pane root = new Pane();
         Scene scene = new Scene(root, largura, altura);
         Stage stage = new Stage();
+
+        root.setBackground(new Background(new BackgroundFill(
+                Color.web("#880209"), null, null
+        )));
+
+        root.setBorder(new Border(new BorderStroke(
+                Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2)
+        )));
 
         // Botão título
         Button titulo = new Button("Show da Programação");
@@ -113,13 +122,12 @@ public class TelaInicial extends Application {
         titulo.setLayoutY(0f);
         titulo.setPrefSize(largura, altura * 0.4f);
         titulo.setFont(Font.font(largura / 12f));
-        titulo.setStyle("-fx-background-color: #316AD4; -fx-text-fill: silver;");
+        titulo.setStyle("-fx-background-color: #2E2C3E; -fx-text-fill: #FFC812; -fx-border-color: white; -fx-border-width: 2px;");
 
         // Botão "Começar Jogo"
         Button comecarJogo = new Button("Começar Jogo");
         comecarJogo.setPrefSize(largura * 0.4f, altura * 0.1f);
         comecarJogo.setFont(Font.font(largura / 20f));
-        comecarJogo.setStyle("-fx-background-color: #28A745; -fx-text-fill: white;");
         comecarJogo.setLayoutX((largura - comecarJogo.getPrefWidth()) / 2f);
         comecarJogo.setLayoutY(altura * 0.6f);
 

@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 public class LeitorJson {
-    int num_perguntas;
-    String[] perguntas, resp_corretas, temas;
-    String[][] respostas;
+    private int num_perguntas;
+    private String[] perguntas, resp_corretas, temas;
+    private String[][] respostas;
 
     public LeitorJson(String[] temas) {
         String json_str = getJsonStr();
@@ -27,7 +27,7 @@ public class LeitorJson {
         respostas = new String[4][num_perguntas];
 
         gerarPerguntas(json_str);
-
+        embaralharPerguntas();
     }
 
     private String getJsonStr() {

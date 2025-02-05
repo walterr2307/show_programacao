@@ -13,7 +13,10 @@ import javazoom.jl.player.advanced.AdvancedPlayer;
 
 public class OrganizadorAudios {
     private static OrganizadorAudios instancia;
+    private boolean isPlaying = false;
     private String voz;
+    private AdvancedPlayer player;
+    private Thread playThread;
 
     private OrganizadorAudios(String voz) {
         this.voz = voz;
@@ -51,7 +54,7 @@ public class OrganizadorAudios {
     public String[] getAudios() {
         int j;
         String copia;
-        String[] audios = carregarCaminhos(null), aux_audios = new String[10];
+        String[] audios = carregarCaminhos(""), aux_audios = new String[10];
 
         for (int i = audios.length - 1; i > 0; i--) {
             j = (int) (Math.random() * (i + 1));
@@ -77,6 +80,8 @@ public class OrganizadorAudios {
     }
 
     public void reproduzirAudio(String caminho) {
+        pararAudio(); // Para qualquer áudio antes de iniciar um novo
+
         String recurso = String.format("/audios/%s/%s", voz, caminho);
         InputStream is = getClass().getResourceAsStream(recurso);
 
@@ -86,8 +91,10 @@ public class OrganizadorAudios {
         }
 
         try {
-            AdvancedPlayer player = new AdvancedPlayer(is);
-            Thread thread = new Thread(() -> {
+            player = new AdvancedPlayer(is);
+            isPlaying = true;
+
+            playThread = new Thread(() -> {
                 try {
                     player.play();
                 } catch (JavaLayerException e) {
@@ -95,9 +102,23 @@ public class OrganizadorAudios {
                 }
             });
 
-            thread.start();
+            playThread.start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void pararAudio() {
+        if (isPlaying) {
+            isPlaying = false;
+            if (player != null) {
+                player.close(); // Interrompe o áudio
+                player = null;
+            }
+            if (playThread != null) {
+                playThread.interrupt(); // Interrompe a thread de reprodução
+                playThread = null;
+            }
         }
     }
 }
