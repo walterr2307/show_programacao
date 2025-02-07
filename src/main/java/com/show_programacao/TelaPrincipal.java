@@ -31,11 +31,10 @@ public class TelaPrincipal {
         this.respostas = respostas;
         this.root = root;
 
-        for (int i = 0; i < 4; i++)
-            ajustarCaixaResposta(i);
-
+        ajustarCaixasResposta();
         ajustarCaixaPergunta();
         adicionarBlocoDinheiro();
+        colocarBotaoParar();
     }
 
     private void ajustarCaixaPergunta() {
@@ -53,16 +52,21 @@ public class TelaPrincipal {
         ++indice_atual;
     }
 
-    private void ajustarCaixaResposta(int i) {
-        caixas_respostas[i].setPrefSize(largura * 0.6f, altura * 0.12f);
-        caixas_respostas[i].setLayoutX(largura / 30f);
-        caixas_respostas[i].setLayoutY(largura * (0.3f + i * 0.11f));
-        caixas_respostas[i].setFont(Font.font(largura / 60f));
-        caixas_respostas[i].setWrapText(true);
-        caixas_respostas[i].setStyle("-fx-background-color: #2E2C3E; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px;");
-        caixas_respostas[i].setOnAction(event -> reescreverCaixas(i));
-        caixas_respostas[i].setText(respostas[i][indice_atual]);
-        root.getChildren().add(caixas_respostas[i]);
+    private void ajustarCaixasResposta() {
+        for (int i = 0; i < 4; i++) {
+            final int index = i;
+
+            caixas_respostas[i].setPrefSize(largura * 0.6f, altura * 0.12f);
+            caixas_respostas[i].setLayoutX(largura / 30f);
+            caixas_respostas[i].setLayoutY(largura * (0.3f + i * 0.11f));
+            caixas_respostas[i].setFont(Font.font(largura / 60f));
+            caixas_respostas[i].setWrapText(true);
+            caixas_respostas[i].setStyle("-fx-background-color: #2E2C3E; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px;");
+            caixas_respostas[i].setOnAction(event -> reescreverCaixas(index));
+            caixas_respostas[i].setText(respostas[i][indice_atual]);
+
+            root.getChildren().add(caixas_respostas[i]);
+        }
     }
 
     public void reescreverCaixas(int i) {
@@ -88,6 +92,8 @@ public class TelaPrincipal {
         PauseTransition delay2 = new PauseTransition(Duration.millis(500));
         delay2.setOnFinished(e -> {
             for (int j = 0; j < 4; j++) {
+                caixas_respostas[j].setVisible(true);
+                caixas_respostas[j].setDisable(false);
                 caixas_respostas[j].setStyle("-fx-background-color: #2E2C3E; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px;");
                 caixas_respostas[j].setText(respostas[j][indice_atual]);
             }
@@ -139,7 +145,35 @@ public class TelaPrincipal {
 
         num = formato.format(dinheiro);
         parar.setText(String.format("PARAR\n(R$ %s)", num));
-        num = formato.format(dinheiro * 2L);
+
+        if (dinheiro == 1000 || dinheiro == 10000 || dinheiro == 100000)
+            num = formato.format(dinheiro * 2.5f);
+        else
+            num = formato.format(dinheiro * 2L);
+
         ganhar.setText(String.format("GANHAR\n(R$ %s)", num));
+    }
+
+    private void colocarBotaoParar() {
+        Button btn = new Button("PARAR");
+
+        btn.setPrefSize(largura / 3.4f, altura / 9f);
+        btn.setLayoutX(largura * 0.67f);
+        btn.setLayoutY(altura * 0.15f);
+        btn.setOnAction(event -> eventoParar());
+
+        root.getChildren().add(btn);
+    }
+
+    private void eventoParar() {
+        Jogatina.getStage().close();
+    }
+
+    public int getIndiceAtual() {
+        return indice_atual;
+    }
+
+    public Button[] getCaixasRespostas(){
+        return caixas_respostas;
     }
 }
