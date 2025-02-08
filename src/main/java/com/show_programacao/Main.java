@@ -24,6 +24,7 @@ public class Main {
             try {
                 Jogatina jogatina = new Jogatina(audios, perguntas, resp_corretas, respostas);
                 Stage stage = new Stage();
+                stage.setResizable(false);
                 jogatina.start(stage);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -31,8 +32,17 @@ public class Main {
         });
     }
 
-    public static void finalizarJogo() {
+    public static void finalizarJogo(int dinheiro, boolean perdeu) {
+        Platform.runLater(() -> {
+            try {
+                Stage stage = new Stage();
+                GameOver game_over = new GameOver(dinheiro, perdeu);
 
+                game_over.start(stage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void main(String[] args) {

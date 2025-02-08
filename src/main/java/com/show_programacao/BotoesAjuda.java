@@ -15,8 +15,9 @@ import javafx.util.Duration;
 import java.net.URL;
 
 public class BotoesAjuda {
-    private float largura = Main.getLargura(), altura = Main.getAltura();
+    private final float largura = Main.getLargura(), altura = Main.getAltura();
     private String[] resp_corretas;
+    private String[][] respostas;
     private TelaPrincipal tela;
     private Pane root;
     private ImageView img_cartas = new ImageView(), img_amigos = new ImageView(), img_convidados = new ImageView();
@@ -24,13 +25,15 @@ public class BotoesAjuda {
     private Image[] imgs_azul = new Image[3], imgs_cinza = new Image[3];
     private Button cartas = new Button(), amigos = new Button(), convidados = new Button();
 
-    public BotoesAjuda(Pane root, String[] resp_corretas, TelaPrincipal tela) {
+    public BotoesAjuda(Pane root, String[] resp_corretas, String[][] respostas, TelaPrincipal tela) {
         this.root = root;
         this.resp_corretas = resp_corretas;
+        this.respostas = respostas;
         this.tela = tela;
 
         colocarImagens();
         colocarBotoes();
+        new BotoesAjuda2(resp_corretas, respostas, amigos, convidados, tela);
     }
 
     private void colocarImagens() {
@@ -127,7 +130,7 @@ public class BotoesAjuda {
 
         for (int i = 0; i < 4; i++) {
             botoes[i].setDisable(true);
-            if (!caixas_resposta[i].getText().equals(resp_corretas[indice_atual - 1])) {
+            if (!respostas[i][indice_atual - 1].equals(resp_corretas[indice_atual - 1])) {
                 caixas_excluidas[j] = caixas_resposta[i];
                 ++j;
             }

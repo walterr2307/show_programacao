@@ -47,7 +47,7 @@ public class Jogatina extends Application {
         Pane root = new Pane();
         Scene scene = new Scene(root, largura, altura);
         TelaPrincipal tela = new TelaPrincipal(audios, perguntas, resp_corretas, respostas, root);
-        new BotoesAjuda(root, resp_corretas, tela);
+        new BotoesAjuda(root, resp_corretas, respostas, tela);
 
         root.setBackground(new Background(new BackgroundFill(
                 Color.web("#880209"), null, null

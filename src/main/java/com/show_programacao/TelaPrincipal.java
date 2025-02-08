@@ -53,6 +53,8 @@ public class TelaPrincipal {
     }
 
     private void ajustarCaixasResposta() {
+        String[] letras = {"A. ", "B. ", "C. ", "D. "};
+
         for (int i = 0; i < 4; i++) {
             final int index = i;
 
@@ -63,20 +65,24 @@ public class TelaPrincipal {
             caixas_respostas[i].setWrapText(true);
             caixas_respostas[i].setStyle("-fx-background-color: #2E2C3E; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px;");
             caixas_respostas[i].setOnAction(event -> reescreverCaixas(index));
-            caixas_respostas[i].setText(respostas[i][indice_atual]);
+            caixas_respostas[i].setText(letras[i] + respostas[i][indice_atual]);
 
             root.getChildren().add(caixas_respostas[i]);
         }
     }
 
     public void reescreverCaixas(int i) {
+        boolean perdeu;
+
         if (Jogatina.respostaCorreta(respostas[i][indice_atual - 1])) {
             caixas_respostas[i].setStyle("-fx-background-color: green; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px;");
+            perdeu = false;
         } else {
             caixas_respostas[i].setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px;");
+            perdeu = true;
         }
 
-        if (indice_atual >= 10) {
+        if (indice_atual >= 10 && !perdeu) {
             PauseTransition delay1 = new PauseTransition(Duration.millis(500));
             delay1.setOnFinished(e -> {
                 Jogatina.getStage().close();
@@ -84,18 +90,33 @@ public class TelaPrincipal {
             });
 
             delay1.play();
+            Jogatina.getStage().close();
+            Main.finalizarJogo(1000000, false);
             return;
         }
 
-        org.reproduzirAudio(audios[indice_atual]);
+        if (indice_atual < 10)
+            org.reproduzirAudio(audios[indice_atual]);
 
         PauseTransition delay2 = new PauseTransition(Duration.millis(500));
         delay2.setOnFinished(e -> {
+            String[] letras = {"A. ", "B. ", "C. ", "D. "};
+
+            if (perdeu) {
+                Jogatina.getStage().close();
+
+                if (indice_atual >= 10)
+                    dinheiro = 0;
+
+                Main.finalizarJogo((int) (dinheiro / 2f), true);
+                return;
+            }
+
             for (int j = 0; j < 4; j++) {
                 caixas_respostas[j].setVisible(true);
                 caixas_respostas[j].setDisable(false);
                 caixas_respostas[j].setStyle("-fx-background-color: #2E2C3E; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px;");
-                caixas_respostas[j].setText(respostas[j][indice_atual]);
+                caixas_respostas[j].setText(letras[j] + respostas[j][indice_atual]);
             }
 
             caixa_pergunta.setText(perguntas[indice_atual]);
@@ -166,14 +187,20 @@ public class TelaPrincipal {
     }
 
     private void eventoParar() {
-        Jogatina.getStage().close();
+        PauseTransition delay = new PauseTransition(Duration.millis(500));
+        delay.setOnFinished(e -> {
+            Jogatina.getStage().close();
+            Main.finalizarJogo(dinheiro, false);
+        });
+
+        delay.play();
     }
 
     public int getIndiceAtual() {
         return indice_atual;
     }
 
-    public Button[] getCaixasRespostas(){
+    public Button[] getCaixasRespostas() {
         return caixas_respostas;
     }
 }

@@ -24,12 +24,16 @@ public class TelaInicial extends Application {
         ToggleGroup group = new ToggleGroup();
         RadioButton kermitButton = new RadioButton("Kermit  ");
         RadioButton faustaoButton = new RadioButton("Faustão");
+        RadioButton lulaButton = new RadioButton("Lula      ");
+        //RadioButton mjButton = new RadioButton("Michael Jackson");
 
         kermitButton.setToggleGroup(group);
         faustaoButton.setToggleGroup(group);
+        lulaButton.setToggleGroup(group);
+        //mjButton.setToggleGroup(group);
 
         // Criando um VBox separado para alinhar os botões ao centro
-        VBox buttonBox = new VBox(5, kermitButton, faustaoButton);
+        VBox buttonBox = new VBox(5, kermitButton, faustaoButton, lulaButton);
         buttonBox.setAlignment(Pos.CENTER);
 
         Button escolherButton = new Button("Escolher");
@@ -48,6 +52,7 @@ public class TelaInicial extends Application {
         vbox.setPrefSize(300, 200);
 
         Scene scene = new Scene(vbox);
+        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Escolha teu personagem");
         primaryStage.show();
@@ -55,6 +60,7 @@ public class TelaInicial extends Application {
 
     private void perguntarTemas() {
         Stage temaStage = new Stage();
+        temaStage.setResizable(false);
 
         // Criando CheckBoxes para cada tema
         CheckBox testesSoftware = new CheckBox("Testes de Software              ");
@@ -142,6 +148,7 @@ public class TelaInicial extends Application {
         stage.setTitle(" ");
         stage.setScene(scene);
         stage.show();
+        stage.setResizable(false);
         org.reproduzirAudio(audio);
     }
 
@@ -149,6 +156,12 @@ public class TelaInicial extends Application {
         switch (voz) {
             case "Kermit":
                 voz = "kermit";
+                break;
+            case "Michael Jackson":
+                voz = "mj";
+                break;
+            case "Lula":
+                voz = "lula";
                 break;
             default:
                 voz = "faustao";
