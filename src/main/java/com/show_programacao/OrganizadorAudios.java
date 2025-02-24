@@ -70,17 +70,13 @@ public class OrganizadorAudios {
 
     public String getAudio(String tipo_arq) {
         int i;
-        String audio;
         String[] audios = carregarCaminhos(tipo_arq);
-
         i = (int) (Math.random() * audios.length);
-        audio = audios[i];
-
-        return audio;
+        return audios[i];
     }
 
     public void reproduzirAudio(String caminho) {
-        pararAudio(); // Para qualquer áudio antes de iniciar um novo
+        pararAudio();
 
         String recurso = String.format("/audios/%s/%s", voz, caminho);
         InputStream is = getClass().getResourceAsStream(recurso);

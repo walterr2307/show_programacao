@@ -4,35 +4,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.CheckBox;
 
 public class TelaInicial extends Application {
     private final float largura = Main.getLargura(), altura = Main.getAltura();
     private String voz;
     private String[] temas;
+    private Regras regras = new Regras();
 
     public void start(Stage primaryStage) {
+        primaryStage.setTitle("Show da Programação");
+        Button btnComecar = new Button("Começar");
+        Button btnRegras = new Button("Regras");
+
+        btnComecar.setStyle("-fx-font-size: 10pt; -fx-padding: 10px 20px;");
+        btnRegras.setStyle("-fx-font-size: 10pt; -fx-padding: 10px 20px;");
+
+        btnRegras.setOnAction(e -> Platform.runLater(() -> regras.start(new Stage())));
+        btnComecar.setOnAction(e -> {
+            primaryStage.close();
+            escolhervoz();
+        });
+
+        VBox layout = new VBox(15);
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().addAll(btnComecar, btnRegras);
+
+        Scene scene = new Scene(layout, 400, 300);
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
+
+    private void escolhervoz() {
+        Stage primaryStage = new Stage();
         ToggleGroup group = new ToggleGroup();
         RadioButton kermitButton = new RadioButton("Kermit  ");
         RadioButton faustaoButton = new RadioButton("Faustão");
         RadioButton lulaButton = new RadioButton("Lula      ");
-        //RadioButton mjButton = new RadioButton("Michael Jackson");
 
         kermitButton.setToggleGroup(group);
         faustaoButton.setToggleGroup(group);
         lulaButton.setToggleGroup(group);
-        //mjButton.setToggleGroup(group);
 
-        // Criando um VBox separado para alinhar os botões ao centro
         VBox buttonBox = new VBox(5, kermitButton, faustaoButton, lulaButton);
         buttonBox.setAlignment(Pos.CENTER);
 
@@ -59,55 +80,56 @@ public class TelaInicial extends Application {
     }
 
     private void perguntarTemas() {
-        Stage temaStage = new Stage();
-        temaStage.setResizable(false);
+        Stage stage = new Stage();
+        String[] topicos = {"POO", "Banco de Dados", "Programação Básica",
+                "Criação de Jogos", "Testes de Software", "Organização de Projetos"};
 
-        // Criando CheckBoxes para cada tema
-        CheckBox testesSoftware = new CheckBox("Testes de Software              ");
-        CheckBox criacaoJogos = new CheckBox("Criação de Jogos                 ");
-        CheckBox gerenciamentoProjetos = new CheckBox("Gerenciamento de Projetos");
+        List<HBox> checkboxContainers = new ArrayList<>();
+        for (String topico : topicos) {
+            CheckBox checkBox = new CheckBox();
+            Label label = new Label(topico);
+            label.setStyle("-fx-font-size: 14px;");
+            label.setMinWidth(200);
+            label.setMaxWidth(Double.MAX_VALUE);
 
-        // Lista para armazenar os temas escolhidos
-        List<String> temasEscolhidos = new ArrayList<>();
+            HBox container = new HBox(10, checkBox, label);
+            container.setAlignment(Pos.CENTER);
+            checkboxContainers.add(container);
+        }
 
-        // Botão para confirmar a escolha
-        Button confirmarButton = new Button("Confirmar");
-        confirmarButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
+        Button confirmar = new Button("Confirmar");
+        confirmar.setStyle("-fx-background-color: green; -fx-text-fill: white;");
+        confirmar.setOnAction(e -> {
+            boolean peloMenosUmSelecionado = checkboxContainers.stream()
+                    .map(hbox -> (CheckBox) hbox.getChildren().getFirst())
+                    .anyMatch(CheckBox::isSelected);
+            if (!peloMenosUmSelecionado) {
+                new Alert(Alert.AlertType.WARNING, "Selecione pelo menos um tópico!", ButtonType.OK).showAndWait();
+            } else {
+                temas = checkboxContainers.stream()
+                        .filter(hbox -> ((CheckBox) hbox.getChildren().getFirst()).isSelected())
+                        .map(hbox -> ((Label) hbox.getChildren().get(1)).getText())
+                        .toList().toArray(new String[0]);
 
-        confirmarButton.setOnAction(e -> {
-            temasEscolhidos.clear(); // Limpa antes de adicionar os temas escolhidos
-
-            if (testesSoftware.isSelected()) temasEscolhidos.add("Testes de Software");
-            if (criacaoJogos.isSelected()) temasEscolhidos.add("Criação de Jogos");
-            if (gerenciamentoProjetos.isSelected()) temasEscolhidos.add("Gerenciamento de Projetos");
-
-            // Verifica se pelo menos um tema foi escolhido
-            if (!temasEscolhidos.isEmpty()) {
-                String[] temasArray = temasEscolhidos.toArray(new String[0]);
-
-                for (int i = 0; i < temasArray.length; i++)
-                    temasArray[i] = temasArray[i].trim();
-
-                temas = temasArray;
-                temaStage.close(); // Fecha a janela
+                stage.close();
                 gerarTelaStart();
             }
         });
 
-        // Criando um VBox para alinhar os componentes
-        VBox vbox = new VBox(10, testesSoftware, criacaoJogos, gerenciamentoProjetos, confirmarButton);
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setPrefSize(300, 200);
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(checkboxContainers);
+        layout.getChildren().add(confirmar);
+        layout.setStyle("-fx-padding: 20;");
+        layout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(vbox);
-        temaStage.setScene(scene);
-        temaStage.setTitle("Escolha um tema");
-        temaStage.show();
+        Scene scene = new Scene(layout, 400, 300);
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.setTitle("Escolha os Tópicos:");
+        stage.show();
     }
 
     private void gerarTelaStart() {
-        ajustarStrings();
-
         OrganizadorAudios org = OrganizadorAudios.instanciar(voz);
         String audio = org.getAudio("_intro");
         Pane root = new Pane();
@@ -122,7 +144,6 @@ public class TelaInicial extends Application {
                 Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2)
         )));
 
-        // Botão título
         Button titulo = new Button("Show da Programação");
         titulo.setLayoutX(0f);
         titulo.setLayoutY(0f);
@@ -130,7 +151,6 @@ public class TelaInicial extends Application {
         titulo.setFont(Font.font(largura / 12f));
         titulo.setStyle("-fx-background-color: #2E2C3E; -fx-text-fill: #FFC812; -fx-border-color: white; -fx-border-width: 2px;");
 
-        // Botão "Começar Jogo"
         Button comecarJogo = new Button("Começar Jogo");
         comecarJogo.setPrefSize(largura * 0.4f, altura * 0.1f);
         comecarJogo.setFont(Font.font(largura / 20f));
@@ -142,43 +162,12 @@ public class TelaInicial extends Application {
             Main.ComecarJogo(temas);
         });
 
-        // Adicionando os botões à tela
         root.getChildren().addAll(titulo, comecarJogo);
-
         stage.setTitle(" ");
         stage.setScene(scene);
         stage.show();
         stage.setResizable(false);
         org.reproduzirAudio(audio);
-    }
-
-    private void ajustarStrings() {
-        switch (voz) {
-            case "Kermit":
-                voz = "kermit";
-                break;
-            case "Michael Jackson":
-                voz = "mj";
-                break;
-            case "Lula":
-                voz = "lula";
-                break;
-            default:
-                voz = "faustao";
-        }
-
-        for (int i = 0; i < temas.length; i++) {
-            switch (temas[i]) {
-                case "Testes de Software":
-                    temas[i] = "teste_software";
-                    break;
-                case "Criação de Jogos":
-                    temas[i] = "criacao_jogos";
-                    break;
-                default:
-                    temas[i] = "gerenciamento_projetos";
-            }
-        }
     }
 
     public static void main(String[] args) {
